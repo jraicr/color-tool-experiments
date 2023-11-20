@@ -6,13 +6,13 @@ class ComplementaryColors extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.complementaries = {
       additive: "#000",
-      substractive: "#000"
+      subtractive: "#000"
     };
     this.elements = {
       additive: null,
       additiveLabel: null,
-      substractive: null,
-      substractiveLabel: null
+      subtractive: null,
+      subtractiveLabel: null
     };
   }
 
@@ -45,7 +45,7 @@ class ComplementaryColors extends HTMLElement {
       }
 
       .additives,
-      .substractives {
+      .subtractives {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -68,9 +68,9 @@ class ComplementaryColors extends HTMLElement {
           <div class="complementary-label">#000000</div>
         </div>
 
-        <div class="substractives">
+        <div class="subtractives">
           <h3>Sustractivo</h3>
-          <div id="substractive" class="complementary-color"></div>
+          <div id="subtractive" class="complementary-color"></div>
           <div class="complementary-label">#000000</div>
         </div>
       </div>`;
@@ -84,22 +84,22 @@ class ComplementaryColors extends HTMLElement {
     this.elements.additive = this.shadowRoot.querySelector("#additive");
     this.elements.additiveLabel = this.shadowRoot.querySelector(".additives > .complementary-label");
 
-    this.elements.substractive = this.shadowRoot.querySelector("#substractive");
-    this.elements.substractiveLabel = this.shadowRoot.querySelector(".substractives > .complementary-label");
+    this.elements.subtractive = this.shadowRoot.querySelector("#subtractive");
+    this.elements.subtractiveLabel = this.shadowRoot.querySelector(".subtractives > .complementary-label");
   }
 
   update(color) {
     const compAdditive = getComplementaryAdditiveColor(color);
-    const compSubstractive = getComplementarySubtractiveColor(color);
+    const compSubtractive = getComplementarySubtractiveColor(color);
 
     this.complementaries.additive = compAdditive;
-    this.complementaries.substractive = compSubstractive;
+    this.complementaries.subtractive = compSubtractive;
 
     this.elements.additive.style.backgroundColor = this.complementaries.additive;
     this.elements.additiveLabel.innerHTML = this.complementaries.additive.toUpperCase();
 
-    this.elements.substractive.style.backgroundColor = this.complementaries.substractive;
-    this.elements.substractiveLabel.innerHTML = this.complementaries.substractive.toUpperCase();
+    this.elements.subtractive.style.backgroundColor = this.complementaries.subtractive;
+    this.elements.subtractiveLabel.innerHTML = this.complementaries.subtractive.toUpperCase();
   }
 }
 
