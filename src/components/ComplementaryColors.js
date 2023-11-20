@@ -49,6 +49,7 @@ class ComplementaryColors extends HTMLElement {
         display: flex;
         flex-direction: column;
         align-items: center;
+        width: 7rem;
       }`;
   }
 
