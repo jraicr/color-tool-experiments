@@ -32,10 +32,8 @@ class ColorPicker extends HTMLElement {
       <style>${ColorPicker.styles}</style>
       <div id="color-picker"></div>
       <div class="selected-color-container">
-        <color-box/>
-      </div>
-      
-      `;
+        <color-box editable-label/>
+      </div>`;
   }
 
   awake() {
@@ -45,19 +43,49 @@ class ColorPicker extends HTMLElement {
     this.colorBox = this.shadowRoot.querySelector(".selected-color-container color-box");
     this.colorBox.update(this.selectedColor);
 
-    colorPicker.on("color:change", (color) => {
-      this.selectedColor = color.hexString;
-      this.colorBox.update(color.hexString);
+    this.setupEditableLabel(colorPicker);
 
-      const colorSelectedEvent = new CustomEvent("color:change", {
-        bubbles: true,
-        detail: {
-          selectedColor: this.selectedColor
-        }
-      });
+    colorPicker.on("input:change", (color) => { this.colorPickerCallback(color.hexString); });
+  }
 
-      this.dispatchEvent(colorSelectedEvent);
+  setupEditableLabel(colorPicker) {
+    this.colorBox.elements.colorBoxLabel.addEventListener("input", (event) => {
+      this.editableLabelCallback(colorPicker, event);
     });
+
+    this.colorBox.elements.colorBoxLabel.addEventListener("blur", (event) => {
+      if (!event.target.innerText.match(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i)) {
+        event.target.innerText = this.selectedColor.toUpperCase();
+      }
+    });
+  }
+
+  editableLabelCallback(colorPicker, event) {
+    // A veces quedan eventos pendientes y se ejecuta
+    // cuando no debe, por lo que lo eliminamos temporalmente
+    colorPicker.off("input:change");
+
+    if (event.target.innerText.match(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i)) {
+      colorPicker.color.hexString = event.target.innerText;
+      this.colorPickerCallback(colorPicker.color.hexString, false);
+    }
+
+    // Restablecemos el evento del input
+    colorPicker.on("input:change", (color) => { this.colorPickerCallback(color.hexString); });
+  }
+
+  colorPickerCallback(colorHex, updateLabel = true) {
+    this.selectedColor = colorHex;
+    this.colorBox.update(colorHex, updateLabel);
+
+    const colorSelectedEvent = new CustomEvent("color:change", {
+      bubbles: true,
+      detail: {
+        selectedColor: this.selectedColor
+      }
+    });
+
+    this.dispatchEvent(colorSelectedEvent);
   }
 }
 

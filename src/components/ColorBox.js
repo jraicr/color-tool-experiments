@@ -15,9 +15,8 @@ class ColorBox extends HTMLElement {
       display: flex;
       flex-direction: column;
       align-items: center;
-
     } 
-    
+
     .color-box {
       width: 50px;
       height: 50px;
@@ -43,19 +42,47 @@ class ColorBox extends HTMLElement {
       <style>${ColorBox.styles}</style>
       <div class="container">
         <div class="color-box"></div>
-        <div class="color-box-label">#000000</div>
       </div>`;
   }
 
   awake() {
     this.elements.colorBox = this.shadowRoot.querySelector(".color-box");
-    this.elements.colorBoxLabel = this.shadowRoot.querySelector(".color-box-label");
+    // Comprueba si existe el atributo no-label, si existe, no crea el label
+    this.createLabel(this.elements.colorBox.parentElement);
   }
 
-  update(color) {
-    this.color = color;
+  update(colorHex, updateLabel = true) {
+    this.changeColor(colorHex);
+
+    if (this.elements.colorBoxLabel && updateLabel) {
+      this.elements.colorBoxLabel.innerHTML = this.color.toUpperCase();
+    }
+  }
+
+  changeColor(colorHex) {
+    this.color = colorHex;
     this.elements.colorBox.style.backgroundColor = this.color;
-    this.elements.colorBoxLabel.innerHTML = this.color.toUpperCase();
+  }
+
+  /**
+   *
+   * @param {HTMLElement} parentElement
+   */
+  createLabel(parentElement) {
+    const labelDivElement = document.createElement("div");
+    labelDivElement.className = "color-box-label";
+    labelDivElement.innerHTML = this.color;
+
+    if (this.hasAttribute("editable-label")) {
+      labelDivElement.contentEditable = true;
+      labelDivElement.addEventListener("input", (event) => {
+        this.changeColor(event.target.innerText);
+      });
+    }
+
+    parentElement.appendChild(labelDivElement);
+
+    this.elements.colorBoxLabel = this.shadowRoot.querySelector(".color-box-label");
   }
 }
 
